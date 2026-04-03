@@ -1,5 +1,5 @@
 """
-Human Typer - Realistic Human Typing Simulator
+KEYSTRA - Realistic Human Typing Simulator
 A desktop application that simulates human-like typing behavior.
 """
 
@@ -599,7 +599,7 @@ class HumanTyperApp(tk.Tk):
     # ── Window Setup ─────────────────────────
 
     def _build_window(self):
-        self.title("Human Typer  ·  Realistic Typing Simulator")
+        self.title("KEYSTRA  ·  Realistic Typing Simulator")
         self.geometry("820x760")
         self.minsize(680, 640)
         self.configure(bg=self.BG)
@@ -655,7 +655,7 @@ class HumanTyperApp(tk.Tk):
         hdr = tk.Frame(self, bg=self.BG, pady=0)
         hdr.pack(fill="x", padx=20, pady=(16, 0))
 
-        tk.Label(hdr, text="⌨  HUMAN TYPER",
+        tk.Label(hdr, text="⌨  KEYSTRA",
                  bg=self.BG, fg=self.ACCENT,
                  font=("Courier", 18, "bold")).pack(side="left")
 
@@ -718,7 +718,6 @@ class HumanTyperApp(tk.Tk):
                                      font=("Courier", 9))
         self._char_count.pack(side="right", padx=6, pady=2)
         self._text_input.bind("<KeyRelease>", self._update_char_count)
-        frm.pack(fill="x", pady=(0, 8))
 
     def _build_controls(self, parent):
         frm = tk.Frame(parent, bg=self.BG)
@@ -765,13 +764,10 @@ class HumanTyperApp(tk.Tk):
         self._stat_typos = self._stat_label(stat_row, "TYPOS", "0")
         self._stat_time  = self._stat_label(stat_row, "TIME",  "0:00")
 
-        frm.pack(fill="x", pady=(0, 8))
-
     def _build_chart(self, parent):
         frm = self._card(parent, "LIVE SPEED GRAPH  (WPM over time)")
         self._chart = SpeedChart(frm, height=110, bd=0, highlightthickness=0)
         self._chart.pack(fill="x", padx=1, pady=1)
-        frm.pack(fill="x", pady=(0, 8))
 
     def _build_settings_panel(self, parent):
         # WPM Slider
@@ -798,8 +794,6 @@ class HumanTyperApp(tk.Tk):
             tk.Label(marks, text=lbl, bg=self.BG2, fg=self.TEXT_DIM,
                      font=("Courier", 8)).pack(side="left",
                                                expand=True if val != 5 else False)
-        wpm_card.pack(fill="x", pady=(0, 8))
-
         # Profile
         profile_card = self._card(parent, "TYPING PROFILE")
         self._profile_var = tk.StringVar(value=self.settings.profile)
@@ -818,8 +812,6 @@ class HumanTyperApp(tk.Tk):
                                        font=("Courier", 8),
                                        wraplength=190, justify="left")
         self._profile_desc.pack(fill="x", padx=4, pady=(0, 4))
-        profile_card.pack(fill="x", pady=(0, 8))
-
         # Options
         opts_card = self._card(parent, "OPTIONS")
         self._typo_var = tk.BooleanVar(value=self.settings.enable_typos)
@@ -835,8 +827,6 @@ class HumanTyperApp(tk.Tk):
                      bg=self.BG2, fg=self.WARNING,
                      font=("Courier", 8), justify="left").pack(anchor="w", padx=4, pady=4)
 
-        opts_card.pack(fill="x", pady=(0, 8))
-
         # Countdown setting
         cd_card = self._card(parent, "COUNTDOWN (sec)")
         self._cd_var = tk.IntVar(value=self.settings.countdown_seconds)
@@ -848,7 +838,6 @@ class HumanTyperApp(tk.Tk):
                             activebackground=self.BG2,
                             font=("Courier", 9),
                             command=self._on_cd_change).pack(side="left", padx=6)
-        cd_card.pack(fill="x", pady=(0, 8))
 
     def _build_footer(self):
         foot = tk.Frame(self, bg=self.BG)
@@ -861,29 +850,21 @@ class HumanTyperApp(tk.Tk):
     # ── Widget Helpers ────────────────────────
 
     def _card(self, parent, title: str) -> tk.Frame:
+        """
+        Creates a titled card widget. Returns the inner content frame.
+        The caller is responsible for calling .pack() / .grid() on the
+        returned frame to place it in the layout.
+        """
         outer = tk.Frame(parent, bg=self.BORDER, bd=0)
+        outer.pack(fill="x", pady=(0, 8))          # outer always fills width
+
         tk.Label(outer, text=title,
                  bg=self.BORDER, fg=self.TEXT_DIM,
                  font=("Courier", 8, "bold"),
                  padx=8, pady=2).pack(fill="x", anchor="w")
+
         inner = tk.Frame(outer, bg=self.BG2, padx=6, pady=6)
         inner.pack(fill="both", expand=True, padx=1, pady=(0, 1))
-        # Make inner behave as the return value for adding children
-        # but return outer so it can be packed
-        outer._inner = inner
-        # Redirect pack_children to inner
-        outer._real_inner = inner
-
-        class ProxyFrame(tk.Frame):
-            def __init__(self_, *a, **kw):
-                pass
-
-        # Monkey-patch: children added to outer go to inner
-        def pack_to_inner(widget, **kw):
-            widget.pack(in_=inner, **kw)
-
-        # Actually just return inner so callers pack into it
-        inner._title = title
         return inner
 
     def _btn(self, parent, text: str, cmd, color: str) -> tk.Button:
